@@ -1,0 +1,27 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "refresh": {
+    "action": {
+      "type": "Action.Execute",
+      "title": "Refresh",
+      "verb": "refreshCard"
+    },
+    "userIds": "${userIds}"
+  },
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "Click me",
+      "verb": "actionClicked"
+    }
+  ],
+  "body": [
+    {
+      "type": "TextBlock",
+      "wrap": true,
+      "text": "${title}"
+    }
+  ]
+}

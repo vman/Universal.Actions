@@ -1,0 +1,45 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.10/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.10",
+  "version": "1.0.0",
+  "id": "e082c2f1-729b-4461-839d-07a1c51bfb6a",
+  "packageName": "com.skynet.ai",
+  "developer": {
+    "name": "Skynet",
+    "websiteUrl": "https://en.wikipedia.org/wiki/Skynet_(Terminator)",
+    "privacyUrl": "https://en.wikipedia.org/wiki/Skynet_(Terminator)",
+    "termsOfUseUrl": "https://en.wikipedia.org/wiki/Skynet_(Terminator)"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "Skynet",
+    "full": "Artificial neural network-based conscious group mind and artificial general superintelligence system"
+  },
+  "description": {
+    "short": "Artificial neural network-based conscious group mind",
+    "full": "Artificial neural network-based conscious group mind and artificial general superintelligence system"
+  },
+  "accentColor": "#D14D80",
+  "staticTabs": [
+  ],
+  "configurableTabs": [
+  ],
+  "bots": [
+    {
+      "botId": "0c9221d2-6aef-4231-b432-497fd856837d",
+      "scopes": [
+        "personal",
+        "team"
+      ],
+      "supportsFiles": false,
+      "isNotificationOnly": false
+    }
+  ],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ]
+}
