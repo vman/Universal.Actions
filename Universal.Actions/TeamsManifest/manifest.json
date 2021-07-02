@@ -1,7 +1,7 @@
 {
-  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.10/MicrosoftTeams.schema.json",
-  "manifestVersion": "1.10",
-  "version": "1.0.0",
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.9/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.9",
+  "version": "1.0.1",
   "id": "e082c2f1-729b-4461-839d-07a1c51bfb6a",
   "packageName": "com.skynet.ai",
   "developer": {
@@ -32,7 +32,8 @@
       "botId": "0c9221d2-6aef-4231-b432-497fd856837d",
       "scopes": [
         "personal",
-        "team"
+        "team",
+        "groupchat"
       ],
       "supportsFiles": false,
       "isNotificationOnly": false

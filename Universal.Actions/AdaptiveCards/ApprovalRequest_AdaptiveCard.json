@@ -1,0 +1,27 @@
+{
+  "type": "AdaptiveCard",
+  "version": "1.4",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "refresh": {
+    "action": {
+      "type": "Action.Execute",
+      "title": "Refresh",
+      "verb": "refreshCard"
+    },
+    "userIds": "${userIds}"
+  },
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "Approve Stage 1",
+      "verb": "stage1ApproveClicked"
+    }
+  ],
+  "body": [
+    {
+      "type": "TextBlock",
+      "wrap": true,
+      "text": "Please approve this asset"
+    }
+  ]
+}

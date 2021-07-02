@@ -13,15 +13,15 @@
   "actions": [
     {
       "type": "Action.Execute",
-      "title": "Click me",
-      "verb": "actionClicked"
+      "title": "Approve Stage 2",
+      "verb": "stage2ApproveClicked"
     }
   ],
   "body": [
     {
       "type": "TextBlock",
       "wrap": true,
-      "text": "${title}"
+      "text": "Thanks for approving Stage 1!"
     }
   ]
 }
