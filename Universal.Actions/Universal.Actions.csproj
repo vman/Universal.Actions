@@ -16,6 +16,18 @@
   </ItemGroup>
 
     <ItemGroup>
+    <Content Update="AdaptiveCards\ApprovalRequest_AdaptiveCard.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="AdaptiveCards\ApprovalRequest_Outlook_AdaptiveCard.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="AdaptiveCards\Stage1ApprovalDone_AdaptiveCard.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="AdaptiveCards\Stage2ApprovalDone_AdaptiveCard.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

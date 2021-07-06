@@ -31,26 +31,25 @@ namespace Universal.Actions
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Text.ToLower() == "request") {
+            if (turnContext.Activity.RemoveRecipientMention().ToLower() == "request")
+            {
 
-                await _graphClient.SendMessageAsync();
+                string cardJson = GetApprovalRequestCard();
 
-                //string cardJson = GetApprovalRequestCard(turnContext.Activity.From.Id);
+                var attachment = new Attachment
+                {
+                    ContentType = AdaptiveCard.ContentType,
+                    Content = JsonConvert.DeserializeObject(cardJson),
+                };
 
-                //var attachment = new Attachment
-                //{
-                //    ContentType = AdaptiveCard.ContentType,
-                //    Content = JsonConvert.DeserializeObject(cardJson),
-                //};
+                var messageActivity = MessageFactory.Attachment(attachment);
 
-                //var messageActivity = MessageFactory.Attachment(attachment);
-
-                //await turnContext.SendActivityAsync(messageActivity);
+                await turnContext.SendActivityAsync(messageActivity);
             }
-            
+
         }
 
-        
+
 
         protected override async Task<InvokeResponse> OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
@@ -58,7 +57,7 @@ namespace Universal.Actions
 
             string cardJson;
 
-            switch (activityValue.Action.Verb) 
+            switch (activityValue.Action.Verb)
             {
                 case "stage1ApproveClicked":
                     cardJson = await ApproveAsset(turnContext.Activity.From.Id, "stage1");
@@ -70,7 +69,7 @@ namespace Universal.Actions
                     cardJson = await GetApprovalStatusCard(turnContext.Activity.From.Id);
                     break;
                 default:
-                    cardJson = GetApprovalRequestCard(turnContext.Activity.From.Id);
+                    cardJson = GetApprovalRequestCard();
                     break;
             }
 
@@ -107,17 +106,17 @@ namespace Universal.Actions
                     default:
                         return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", userId);
                 }
-                
+
             }
-            else 
+            else
             {
                 return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", userId);
             }
         }
 
-        private string GetApprovalRequestCard(string userId)
+        private string GetApprovalRequestCard()
         {
-            return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", userId);
+            return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", string.Empty);
         }
 
         private static string GetCard(string filePath, string userId)
@@ -126,9 +125,20 @@ namespace Universal.Actions
 
             var template = new AdaptiveCardTemplate(templateJson);
 
+            string[] userIds;
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                userIds = new string[] { };
+            }
+            else 
+            {
+                userIds = new string[] { userId };
+            }
+
             var adaptiveCardData = new
             {
-                userIds = new string[] { userId }
+                userIds
             };
 
             string cardJson = template.Expand(adaptiveCardData);
