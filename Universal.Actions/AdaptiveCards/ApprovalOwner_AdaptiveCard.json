@@ -10,18 +10,11 @@
     },
     "userIds": "${userIds}"
   },
-  "actions": [
-    {
-      "type": "Action.Execute",
-      "title": "Approve",
-      "verb": "approveClicked"
-    }
-  ],
   "body": [
     {
       "type": "TextBlock",
       "wrap": true,
-      "text": "Please approve this asset"
+      "text": "This is the owner card \n ${text}"
     }
   ]
 }

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Universal.Actions.Models;
 
 namespace Universal.Actions
 {
@@ -33,8 +34,8 @@ namespace Universal.Actions
         {
             if (turnContext.Activity.RemoveRecipientMention().ToLower() == "request")
             {
-
-                string cardJson = GetApprovalRequestCard();
+                //1) Capture this user as the owner of the asset
+                string cardJson = await GetApprovalRequestCard(turnContext.Activity.Conversation.Id, turnContext.Activity.From.Id);
 
                 var attachment = new Attachment
                 {
@@ -55,21 +56,22 @@ namespace Universal.Actions
         {
             var activityValue = ((JObject)turnContext.Activity.Value).ToObject<AdaptiveCardInvokeValue>();
 
-            string cardJson;
+            string cardJson = string.Empty;
 
             switch (activityValue.Action.Verb)
             {
-                case "stage1ApproveClicked":
-                    cardJson = await ApproveAsset(turnContext.Activity.From.Id, "stage1");
-                    break;
-                case "stage2ApproveClicked":
-                    cardJson = await ApproveAsset(turnContext.Activity.From.Id, "stage2");
+                //2) When a user clicks the approve button, update their card but also update the owners card.
+                case "approveClicked":
+                    cardJson = await ApproveAsset(turnContext.Activity.Conversation.Id, turnContext.Activity.From);
+                    //var updateActivity = MessageFactory.Text("test");
+
+                    //updateActivity.Id = turnContext.Activity.ReplyToId;
+                    ////updateActivity.Conversation = turnContext.Activity.Conversation;
+
+                    //await turnContext.UpdateActivityAsync(updateActivity, cancellationToken);
                     break;
                 case "refreshCard":
-                    cardJson = await GetApprovalStatusCard(turnContext.Activity.From.Id);
-                    break;
-                default:
-                    cardJson = GetApprovalRequestCard();
+                    cardJson = await GetApprovalStatusCard(turnContext.Activity.Conversation.Id, turnContext.Activity.From.Id);
                     break;
             }
 
@@ -80,32 +82,41 @@ namespace Universal.Actions
                 Value = JsonConvert.DeserializeObject(cardJson)
             };
 
+           
+
             return CreateInvokeResponse(adaptiveCardResponse);
         }
 
-        private async Task<string> ApproveAsset(string userId, string stage)
+        private async Task<string> ApproveAsset(string assetId, ChannelAccount user)
         {
-            var user = new Models.User() { Id = userId, Approved = stage };
-            await _universalDb.UpsertApprovalAsync(user);
+            var asset = await _universalDb.GetAssetAsync(assetId);
 
-            return await GetApprovalStatusCard(userId);
+            asset.ApprovedBy.Add(new User { Id = user.Id, Name = user.Name });
+
+            await _universalDb.UpsertAssetAsync(asset);
+
+            return await GetApprovalStatusCard(assetId, user.Id);
         }
 
-        private async Task<string> GetApprovalStatusCard(string userId)
+        private async Task<string> GetApprovalStatusCard(string assetId, string userId)
         {
-            var user = await _universalDb.GetApprovalAsync(userId);
+            var asset = await _universalDb.GetAssetAsync(assetId);
 
-            if (user != null)
+
+            if (asset != null && asset.Owner == userId) 
             {
-                switch (user.Approved)
+                string text = "Approved by: \n";
+
+                foreach (var user in asset.ApprovedBy) 
                 {
-                    case "stage1":
-                        return GetCard(@".\AdaptiveCards\Stage1ApprovalDone_AdaptiveCard.json", userId);
-                    case "stage2":
-                        return GetCard(@".\AdaptiveCards\Stage2ApprovalDone_AdaptiveCard.json", userId);
-                    default:
-                        return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", userId);
+                    text += @$"{user.Name} \n";
                 }
+
+                return GetCard(@".\AdaptiveCards\ApprovalOwner_AdaptiveCard.json", userId, text);
+            }
+            else if (asset != null && asset.ApprovedBy.FindIndex(u => u.Id == userId) != -1)
+            {
+                return GetCard(@".\AdaptiveCards\ApprovalDone_AdaptiveCard.json", userId);
 
             }
             else
@@ -114,12 +125,16 @@ namespace Universal.Actions
             }
         }
 
-        private string GetApprovalRequestCard()
+        private async Task<string> GetApprovalRequestCard(string assetId, string ownerId)
         {
-            return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", string.Empty);
+            var asset = new Asset() { Id = assetId, Owner = ownerId, ApprovedBy = new List<User>() };
+            
+            await _universalDb.UpsertAssetAsync(asset);
+
+            return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", ownerId);
         }
 
-        private static string GetCard(string filePath, string userId)
+        private static string GetCard(string filePath, string userId, string text = "")
         {
             string templateJson = File.ReadAllText(filePath);
 
@@ -138,7 +153,8 @@ namespace Universal.Actions
 
             var adaptiveCardData = new
             {
-                userIds
+                userIds,
+                text
             };
 
             string cardJson = template.Expand(adaptiveCardData);

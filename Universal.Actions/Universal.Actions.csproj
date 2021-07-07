@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="AdaptiveCards\ApprovalRequest_Outlook_AdaptiveCard.json" />
+    <Content Remove="AdaptiveCards\Stage1ApprovalDone_AdaptiveCard.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AdaptiveCards" Version="2.7.1" />
     <PackageReference Include="AdaptiveCards.Templating" Version="1.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
@@ -16,16 +21,13 @@
   </ItemGroup>
 
     <ItemGroup>
+    <Content Update="AdaptiveCards\ApprovalOwner_AdaptiveCard.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="AdaptiveCards\ApprovalRequest_AdaptiveCard.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="AdaptiveCards\ApprovalRequest_Outlook_AdaptiveCard.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="AdaptiveCards\Stage1ApprovalDone_AdaptiveCard.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="AdaptiveCards\Stage2ApprovalDone_AdaptiveCard.json">
+    <Content Update="AdaptiveCards\ApprovalDone_AdaptiveCard.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="appsettings.json">

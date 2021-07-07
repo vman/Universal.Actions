@@ -47,13 +47,13 @@ namespace Universal.Actions
 
         public IConfiguration Configuration { get; set; }
 
-        public async Task<Model.User> GetApprovalAsync(string userId)
+        public async Task<Asset> GetAssetAsync(string assetId)
         {
             try
             {
-                var user = await this._container.Value.ReadItemAsync<Model.User>(userId, new PartitionKey(PartitionKeyValue));
+                var asset = await _container.Value.ReadItemAsync<Asset>(assetId, new PartitionKey(PartitionKeyValue));
 
-                return user;
+                return asset;
             }
             catch (CosmosException ex)
             {
@@ -70,12 +70,12 @@ namespace Universal.Actions
             
         }
 
-        public async Task<Model.User> UpsertApprovalAsync(Model.User user)
+        public async Task<Asset> UpsertAssetAsync(Asset asset)
         {
 
-            user.PartitionKey = PartitionKeyValue;
+            asset.PartitionKey = PartitionKeyValue;
 
-            ItemResponse<Model.User> response = await this._container.Value.UpsertItemAsync(user, new PartitionKey(PartitionKeyValue));
+            ItemResponse<Asset> response = await _container.Value.UpsertItemAsync(asset, new PartitionKey(PartitionKeyValue));
             return response.Resource;
         }
 
