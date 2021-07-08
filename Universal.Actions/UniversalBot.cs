@@ -63,12 +63,16 @@ namespace Universal.Actions
                 //2) When a user clicks the approve button, update their card but also update the owners card.
                 case "approveClicked":
                     cardJson = await ApproveAsset(turnContext.Activity.Conversation.Id, turnContext.Activity.From);
-                    //var updateActivity = MessageFactory.Text("test");
+                    var attachment = new Attachment
+                    {
+                        ContentType = AdaptiveCard.ContentType,
+                        Content = JsonConvert.DeserializeObject(cardJson),
+                    };
 
-                    //updateActivity.Id = turnContext.Activity.ReplyToId;
-                    ////updateActivity.Conversation = turnContext.Activity.Conversation;
+                    var messageActivity = MessageFactory.Attachment(attachment);
+                    messageActivity.Id = turnContext.Activity.ReplyToId;
+                    await turnContext.UpdateActivityAsync(messageActivity);
 
-                    //await turnContext.UpdateActivityAsync(updateActivity, cancellationToken);
                     break;
                 case "refreshCard":
                     cardJson = await GetApprovalStatusCard(turnContext.Activity.Conversation.Id, turnContext.Activity.From.Id);
@@ -82,9 +86,8 @@ namespace Universal.Actions
                 Value = JsonConvert.DeserializeObject(cardJson)
             };
 
-           
-
             return CreateInvokeResponse(adaptiveCardResponse);
+
         }
 
         private async Task<string> ApproveAsset(string assetId, ChannelAccount user)
@@ -109,7 +112,7 @@ namespace Universal.Actions
 
                 foreach (var user in asset.ApprovedBy) 
                 {
-                    text += @$"{user.Name} \n";
+                    text += $"{user.Name} \n";
                 }
 
                 return GetCard(@".\AdaptiveCards\ApprovalOwner_AdaptiveCard.json", userId, text);
