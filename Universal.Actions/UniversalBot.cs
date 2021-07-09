@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Universal.Actions.Models;
@@ -98,7 +99,10 @@ namespace Universal.Actions
 
             await _universalDb.UpsertAssetAsync(asset);
 
-            return await GetApprovalStatusCard(assetId, user.Id);
+            string[] users = asset.ApprovedBy.Select(user => user.Id).Append(asset.Owner).ToArray();
+
+            //return await GetApprovalStatusCard(assetId, user.Id);
+            return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", users);
         }
 
         private async Task<string> GetApprovalStatusCard(string assetId, string userId)
@@ -111,7 +115,7 @@ namespace Universal.Actions
                 string text = "Approved by: \n";
 
                 foreach (var user in asset.ApprovedBy) 
-                {
+                { 
                     text += $"{user.Name} \n";
                 }
 
@@ -119,7 +123,9 @@ namespace Universal.Actions
             }
             else if (asset != null && asset.ApprovedBy.FindIndex(u => u.Id == userId) != -1)
             {
-                return GetCard(@".\AdaptiveCards\ApprovalDone_AdaptiveCard.json", new string[] { asset.Owner, userId });
+                string[] users = asset.ApprovedBy.Select(user => user.Id).Append(asset.Owner).ToArray();
+
+                return GetCard(@".\AdaptiveCards\ApprovalDone_AdaptiveCard.json", users);
 
             }
             else
@@ -136,6 +142,8 @@ namespace Universal.Actions
 
             return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", new string[] { ownerId });
         }
+
+      
 
         private static string GetCard(string filePath, string[] userIds, string text = "")
         {
