@@ -115,16 +115,16 @@ namespace Universal.Actions
                     text += $"{user.Name} \n";
                 }
 
-                return GetCard(@".\AdaptiveCards\ApprovalOwner_AdaptiveCard.json", userId, text);
+                return GetCard(@".\AdaptiveCards\ApprovalOwner_AdaptiveCard.json", new string[] { userId }, text);
             }
             else if (asset != null && asset.ApprovedBy.FindIndex(u => u.Id == userId) != -1)
             {
-                return GetCard(@".\AdaptiveCards\ApprovalDone_AdaptiveCard.json", userId);
+                return GetCard(@".\AdaptiveCards\ApprovalDone_AdaptiveCard.json", new string[] { asset.Owner, userId });
 
             }
             else
             {
-                return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", userId);
+                return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", new string[] { userId });
             }
         }
 
@@ -134,25 +134,14 @@ namespace Universal.Actions
             
             await _universalDb.UpsertAssetAsync(asset);
 
-            return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", ownerId);
+            return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", new string[] { ownerId });
         }
 
-        private static string GetCard(string filePath, string userId, string text = "")
+        private static string GetCard(string filePath, string[] userIds, string text = "")
         {
             string templateJson = File.ReadAllText(filePath);
 
             var template = new AdaptiveCardTemplate(templateJson);
-
-            string[] userIds;
-
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                userIds = new string[] { };
-            }
-            else 
-            {
-                userIds = new string[] { userId };
-            }
 
             var adaptiveCardData = new
             {
