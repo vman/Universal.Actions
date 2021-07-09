@@ -14,6 +14,12 @@
     {
       "type": "TextBlock",
       "wrap": true,
+      "weight": "Bolder",
+      "text": "Approval done view"
+    },
+    {
+      "type": "TextBlock",
+      "wrap": true,
       "text": "Thanks for the approval!"
     }
   ]

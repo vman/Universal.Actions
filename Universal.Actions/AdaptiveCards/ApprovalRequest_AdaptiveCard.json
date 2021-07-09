@@ -21,6 +21,12 @@
     {
       "type": "TextBlock",
       "wrap": true,
+      "weight": "Bolder",
+      "text": "Approval request view"
+    },
+    {
+      "type": "TextBlock",
+      "wrap": true,
       "text": "Please approve this asset"
     }
   ]

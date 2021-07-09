@@ -14,7 +14,13 @@
     {
       "type": "TextBlock",
       "wrap": true,
-      "text": "This is the owner card \n ${text}"
+      "weight": "Bolder",
+      "text": "Approval Owner view"
+    },
+    {
+      "type": "TextBlock",
+      "wrap": true,
+      "text": "${text}"
     }
   ]
 }

@@ -22,12 +22,10 @@ namespace Universal.Actions
     {
 
         private UniversalDb _universalDb;
-        private GraphClient _graphClient;
 
-        public UniversalBot(UniversalDb universalDb, GraphClient graphClient)
+        public UniversalBot(UniversalDb universalDb)
         {
             _universalDb = universalDb;
-            _graphClient = graphClient;
 
         }
 
@@ -101,7 +99,6 @@ namespace Universal.Actions
 
             string[] users = asset.ApprovedBy.Select(user => user.Id).Append(asset.Owner).ToArray();
 
-            //return await GetApprovalStatusCard(assetId, user.Id);
             return GetCard(@".\AdaptiveCards\ApprovalRequest_AdaptiveCard.json", users);
         }
 
