@@ -33,7 +33,7 @@ namespace Universal.Actions
         {
             if (turnContext.Activity.RemoveRecipientMention().ToLower() == "request")
             {
-                //1) Capture this user as the owner of the asset
+                //Capture this user as the owner of the asset and send the base approval request card with approve button
                 string cardJson = await GetApprovalRequestCard(turnContext.Activity.Conversation.Id, turnContext.Activity.From.Id);
 
                 var attachment = new Attachment
@@ -46,7 +46,6 @@ namespace Universal.Actions
 
                 await turnContext.SendActivityAsync(messageActivity);
             }
-
         }
 
 
@@ -59,7 +58,7 @@ namespace Universal.Actions
 
             switch (activityValue.Action.Verb)
             {
-                //2) When a user clicks the approve button, update their card but also update the owners card.
+                //When a user clicks the approve button, update the message with the base adaptive card where the user is in in the userIds array.
                 case "approveClicked":
                     cardJson = await ApproveAsset(turnContext.Activity.Conversation.Id, turnContext.Activity.From);
                     var attachment = new Attachment
@@ -73,9 +72,11 @@ namespace Universal.Actions
                     await turnContext.UpdateActivityAsync(messageActivity);
 
                     break;
+
+                //For each user in the userIds array, get the relevant card depending on their role and actions.
                 case "refreshCard":
                     cardJson = await GetApprovalStatusCard(turnContext.Activity.Conversation.Id, turnContext.Activity.From.Id);
-                    break;
+                    break; 
             }
 
             var adaptiveCardResponse = new AdaptiveCardInvokeResponse()
@@ -86,7 +87,6 @@ namespace Universal.Actions
             };
 
             return CreateInvokeResponse(adaptiveCardResponse);
-
         }
 
         private async Task<string> ApproveAsset(string assetId, ChannelAccount user)
